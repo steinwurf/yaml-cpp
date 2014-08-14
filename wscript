@@ -60,5 +60,6 @@ def build(bld):
     bld.stlib(features='cxx',
               source=bld.path.ant_glob('src/*.cpp'),
               includes=['src/', 'include'],
+	      use=['boost_includes'],
               target=APPNAME,
               lib='dl pthread')
