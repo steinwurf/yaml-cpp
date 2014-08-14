@@ -59,6 +59,6 @@ def build(bld):
 
     bld.stlib(features='cxx',
               source=bld.path.ant_glob('src/*.cpp'),
-              includes=['src/', 'include/yaml-cpp'],
+              includes=['src/', 'include'],
               target=APPNAME,
               lib='dl pthread')
