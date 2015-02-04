@@ -57,14 +57,13 @@ def build(bld):
 
         recurse_helper(bld, 'boost')
 
-    # I don't know if this builds
-    # bld.stlib(features='cxx',
-    #           source=bld.path.ant_glob('src/*.cpp'),
-    #           includes=['src', 'include'],
-    #           export_includes=['include'],
-    #           use=['boost_includes'],
-    #           target=APPNAME,
-    #           lib='dl pthread')
+    bld.stlib(features='cxx',
+              source=bld.path.ant_glob('src/*.cpp'),
+              includes=['src', 'include'],
+              export_includes=['include'],
+              use=['boost_includes'],
+              target=APPNAME,
+              lib='dl pthread')
 
     bld.env.append_unique(
         'DEFINES_STEINWURF_VERSION',
