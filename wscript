@@ -20,12 +20,12 @@ def options(opt):
 
     bundle.add_dependency(opt, resolve.ResolveGitMajorVersion(
         name='boost',
-        git_repository='github.com/steinwurf/external-boost-light.git',
+        git_repository='github.com/steinwurf/boost.git',
         major_version=1))
 
     bundle.add_dependency(opt, resolve.ResolveGitMajorVersion(
         name='waf-tools',
-        git_repository='github.com/steinwurf/external-waf-tools.git',
+        git_repository='github.com/steinwurf/waf-tools.git',
         major_version=2))
 
     opt.load('wurf_configure_output')
@@ -57,10 +57,15 @@ def build(bld):
 
         recurse_helper(bld, 'boost')
 
-    bld.stlib(features='cxx',
-              source=bld.path.ant_glob('src/*.cpp'),
-              includes=['src', 'include'],
-              export_includes=['include'],
-              use=['boost_includes'],
-              target=APPNAME,
-              lib='dl pthread')
+    # I don't know if this builds
+    # bld.stlib(features='cxx',
+    #           source=bld.path.ant_glob('src/*.cpp'),
+    #           includes=['src', 'include'],
+    #           export_includes=['include'],
+    #           use=['boost_includes'],
+    #           target=APPNAME,
+    #           lib='dl pthread')
+
+    bld.env.append_unique(
+        'DEFINES_STEINWURF_VERSION',
+        'STEINWURF_YAML_CPP_VERSION="{}"'.format(VERSION))
