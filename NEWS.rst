@@ -6,5 +6,4 @@ of every change, see the Git log.
 
 Latest
 ------
-* tbd
-*
+* Major: Update to use version 0.5.2
