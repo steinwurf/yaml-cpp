@@ -7,6 +7,7 @@
 #pragma once
 #endif
 
+#include "yaml-cpp/emitterstyle.h"
 #include "yaml-cpp/dll.h"
 #include "yaml-cpp/node/type.h"
 #include "yaml-cpp/node/ptr.h"
@@ -28,6 +29,11 @@ class node : private boost::noncopyable {
 
   const std::string& scalar() const { return m_pRef->scalar(); }
   const std::string& tag() const { return m_pRef->tag(); }
+  EmitterStyle::value style() const { return m_pRef->style(); }
+
+  template <typename T>
+  bool equals(const T& rhs, shared_memory_holder pMemory);
+  bool equals(const char* rhs, shared_memory_holder pMemory);
 
   void mark_defined() {
     if (is_defined())
@@ -76,6 +82,12 @@ class node : private boost::noncopyable {
     m_pRef->set_tag(tag);
   }
 
+  // style
+  void set_style(EmitterStyle::value style) {
+    mark_defined();
+    m_pRef->set_style(style);
+  }
+
   // size/iterator
   std::size_t size() const { return m_pRef->size(); }
 
@@ -102,7 +114,10 @@ class node : private boost::noncopyable {
 
   // indexing
   template <typename Key>
-  node& get(const Key& key, shared_memory_holder pMemory) const {
+  node* get(const Key& key, shared_memory_holder pMemory) const {
+    // NOTE: this returns a non-const node so that the top-level Node can wrap
+    // it, and returns a pointer so that it can be NULL (if there is no such
+    // key).
     return static_cast<const node_ref&>(*m_pRef).get(key, pMemory);
   }
   template <typename Key>
@@ -116,7 +131,10 @@ class node : private boost::noncopyable {
     return m_pRef->remove(key, pMemory);
   }
 
-  node& get(node& key, shared_memory_holder pMemory) const {
+  node* get(node& key, shared_memory_holder pMemory) const {
+    // NOTE: this returns a non-const node so that the top-level Node can wrap
+    // it, and returns a pointer so that it can be NULL (if there is no such
+    // key).
     return static_cast<const node_ref&>(*m_pRef).get(key, pMemory);
   }
   node& get(node& key, shared_memory_holder pMemory) {

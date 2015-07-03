@@ -60,8 +60,9 @@ inline void Node::EnsureNodeExists() const {
 }
 
 inline bool Node::IsDefined() const {
-  if (!m_isValid)
-    throw InvalidNode();
+  if (!m_isValid) {
+    return false;
+  }
   return m_pNode ? m_pNode->is_defined() : true;
 }
 
@@ -162,6 +163,19 @@ inline void Node::SetTag(const std::string& tag) {
     throw InvalidNode();
   EnsureNodeExists();
   m_pNode->set_tag(tag);
+}
+
+inline EmitterStyle::value Node::Style() const {
+  if (!m_isValid)
+    throw InvalidNode();
+  return m_pNode ? m_pNode->style() : EmitterStyle::Default;
+}
+
+inline void Node::SetStyle(EmitterStyle::value style) {
+  if (!m_isValid)
+    throw InvalidNode();
+  EnsureNodeExists();
+  m_pNode->set_style(style);
 }
 
 // assignment
@@ -353,9 +367,12 @@ inline const Node Node::operator[](const Key& key) const {
   if (!m_isValid)
     throw InvalidNode();
   EnsureNodeExists();
-  detail::node& value = static_cast<const detail::node&>(*m_pNode)
+  detail::node* value = static_cast<const detail::node&>(*m_pNode)
                             .get(detail::to_value(key), m_pMemory);
-  return Node(value, m_pMemory);
+  if (!value) {
+    return Node(ZombieNode);
+  }
+  return Node(*value, m_pMemory);
 }
 
 template <typename Key>
@@ -380,9 +397,13 @@ inline const Node Node::operator[](const Node& key) const {
     throw InvalidNode();
   EnsureNodeExists();
   key.EnsureNodeExists();
-  detail::node& value =
+  m_pMemory->merge(*key.m_pMemory);
+  detail::node* value =
       static_cast<const detail::node&>(*m_pNode).get(*key.m_pNode, m_pMemory);
-  return Node(value, m_pMemory);
+  if (!value) {
+    return Node(ZombieNode);
+  }
+  return Node(*value, m_pMemory);
 }
 
 inline Node Node::operator[](const Node& key) {
@@ -390,6 +411,7 @@ inline Node Node::operator[](const Node& key) {
     throw InvalidNode();
   EnsureNodeExists();
   key.EnsureNodeExists();
+  m_pMemory->merge(*key.m_pMemory);
   detail::node& value = m_pNode->get(*key.m_pNode, m_pMemory);
   return Node(value, m_pMemory);
 }
