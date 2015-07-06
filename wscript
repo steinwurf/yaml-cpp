@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 APPNAME = 'yaml-cpp'
-VERSION = '1.0.1'
+VERSION = '2.0.0'
 
 
 def recurse_helper(ctx, name):
